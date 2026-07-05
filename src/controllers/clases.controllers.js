@@ -45,3 +45,27 @@ export const obtenerClases = async (req, res) => {
     });
   }
 };
+
+export const eliminarClase = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const claseEliminada = await Clase.findByIdAndDelete(id);
+
+    if (!claseEliminada) {
+      return res.status(404).json({
+        mensaje: "Clase no encontrada",
+      });
+    }
+
+    return res.status(200).json({
+      mensaje: "Clase eliminada correctamente",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      mensaje: "Error al eliminar la clase",
+    });
+  }
+};
