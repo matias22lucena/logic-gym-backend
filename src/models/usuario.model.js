@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const usuarioSchema = new mongoose.Schema(
   {
-    nombre: {
+/*     nombre: {
       type: String,
       required: true,
       trim: true,
@@ -16,7 +16,7 @@ const usuarioSchema = new mongoose.Schema(
       trim: true,
       minlength: 2,
       maxlength: 50,
-    },
+    }, */
 
     nombreUsuario: {
       type: String,
@@ -35,11 +35,11 @@ const usuarioSchema = new mongoose.Schema(
       lowercase: true,
     },
 
-    telefono: {
+/*     telefono: {
       type: String,
       required: true,
       trim: true,
-    },
+    }, */
 
     contrasenia: {
       type: String,
@@ -47,17 +47,17 @@ const usuarioSchema = new mongoose.Schema(
       minlength: 8,
     },
 
-    planContratado: {
+/*     planContratado: {
       type: String,
       enum: ["musculacion", "clases", "full", "sin plan"],
       default: "sin plan",
-    },
+    }, */
 
     rolUsuario: {
       type: String,
       enum: ["usuario", "admin"],
       default: "usuario",
-    },
+    }, 
 
     bloqueo: {
       type: Boolean,

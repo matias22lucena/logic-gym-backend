@@ -4,23 +4,23 @@ import Usuario from "../models/usuario.model.js";
 export const registrarUsuario = async (req, res) => {
   try {
     const {
-      nombre,
-      apellido,
+/*       nombre,
+      apellido, */
       nombreUsuario,
       correoUsuario,
-      telefono,
+/*       telefono, */
       contrasenia,
-      planContratado,
+     /*  planContratado, */
       rolUsuario,
       bloqueo,
     } = req.body;
 
     if (
-      !nombre ||
-      !apellido ||
+/*       !nombre ||
+      !apellido || */
       !nombreUsuario ||
       !correoUsuario ||
-      !telefono ||
+/*       !telefono || */
       !contrasenia
     ) {
       return res.status(400).json({
@@ -47,13 +47,13 @@ export const registrarUsuario = async (req, res) => {
     const contraseniaEncriptada = await bcrypt.hash(contrasenia, 10);
 
     const nuevoUsuario = new Usuario({
-      nombre: nombre.trim(),
-      apellido: apellido.trim(),
+/*       nombre: nombre.trim(),
+      apellido: apellido.trim(), */
       nombreUsuario: nombreUsuario.trim(),
       correoUsuario: correoUsuario.trim().toLowerCase(),
-      telefono: telefono.trim(),
+  /*     telefono: telefono.trim(), */
       contrasenia: contraseniaEncriptada,
-      planContratado: planContratado || "sin plan",
+     /*  planContratado: planContratado || "sin plan", */
       rolUsuario: rolUsuario || "usuario",
       bloqueo: bloqueo || false,
     });
@@ -64,12 +64,12 @@ export const registrarUsuario = async (req, res) => {
       mensaje: "Usuario registrado correctamente",
       usuario: {
         id: nuevoUsuario._id,
-        nombre: nuevoUsuario.nombre,
-        apellido: nuevoUsuario.apellido,
+       /*  nombre: nuevoUsuario.nombre,
+        apellido: nuevoUsuario.apellido, */
         nombreUsuario: nuevoUsuario.nombreUsuario,
         correoUsuario: nuevoUsuario.correoUsuario,
-        telefono: nuevoUsuario.telefono,
-        planContratado: nuevoUsuario.planContratado,
+/*         telefono: nuevoUsuario.telefono,
+        planContratado: nuevoUsuario.planContratado, */
         rolUsuario: nuevoUsuario.rolUsuario,
         bloqueo: nuevoUsuario.bloqueo,
       },
