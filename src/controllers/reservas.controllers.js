@@ -8,7 +8,7 @@ const obtenerCapacidadPorDetalle = (detalle) => {
   if (det.includes("spinning")) return 18;
   if (det.includes("hiit")) return 15;
   if (det.includes("funcional")) return 25;
-  return 20; // default
+  return 20; 
 };
 
 export const obtenerReservas = async (req, res) => {
