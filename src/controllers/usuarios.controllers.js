@@ -3,26 +3,10 @@ import Usuario from "../models/usuario.model.js";
 
 export const registrarUsuario = async (req, res) => {
   try {
-    const {
-/*       nombre,
-      apellido, */
-      nombreUsuario,
-      correoUsuario,
-/*       telefono, */
-      contrasenia,
-     /*  planContratado, */
-      rolUsuario,
-      bloqueo,
-    } = req.body;
+    const { nombreUsuario, correoUsuario, contrasenia, rolUsuario, bloqueo } =
+      req.body;
 
-    if (
-/*       !nombre ||
-      !apellido || */
-      !nombreUsuario ||
-      !correoUsuario ||
-/*       !telefono || */
-      !contrasenia
-    ) {
+    if (!nombreUsuario || !correoUsuario || !contrasenia) {
       return res.status(400).json({
         mensaje: "Todos los campos obligatorios deben estar completos",
       });
@@ -35,7 +19,10 @@ export const registrarUsuario = async (req, res) => {
     }
 
     const usuarioExiste = await Usuario.findOne({
-      $or: [{ nombreUsuario }, { correoUsuario }],
+      $or: [
+        { nombreUsuario: nombreUsuario.trim() },
+        { correoUsuario: correoUsuario.trim().toLowerCase() },
+      ],
     });
 
     if (usuarioExiste) {
@@ -47,13 +34,9 @@ export const registrarUsuario = async (req, res) => {
     const contraseniaEncriptada = await bcrypt.hash(contrasenia, 10);
 
     const nuevoUsuario = new Usuario({
-/*       nombre: nombre.trim(),
-      apellido: apellido.trim(), */
       nombreUsuario: nombreUsuario.trim(),
       correoUsuario: correoUsuario.trim().toLowerCase(),
-  /*     telefono: telefono.trim(), */
       contrasenia: contraseniaEncriptada,
-     /*  planContratado: planContratado || "sin plan", */
       rolUsuario: rolUsuario || "usuario",
       bloqueo: bloqueo || false,
     });
@@ -64,12 +47,8 @@ export const registrarUsuario = async (req, res) => {
       mensaje: "Usuario registrado correctamente",
       usuario: {
         id: nuevoUsuario._id,
-       /*  nombre: nuevoUsuario.nombre,
-        apellido: nuevoUsuario.apellido, */
         nombreUsuario: nuevoUsuario.nombreUsuario,
         correoUsuario: nuevoUsuario.correoUsuario,
-/*         telefono: nuevoUsuario.telefono,
-        planContratado: nuevoUsuario.planContratado, */
         rolUsuario: nuevoUsuario.rolUsuario,
         bloqueo: nuevoUsuario.bloqueo,
       },
@@ -111,7 +90,7 @@ export const loginUsuario = async (req, res) => {
 
     const contraseniaCorrecta = await bcrypt.compare(
       contrasenia,
-      usuario.contrasenia
+      usuario.contrasenia,
     );
 
     if (!contraseniaCorrecta) {
@@ -130,12 +109,8 @@ export const loginUsuario = async (req, res) => {
       mensaje: "Login correcto",
       usuario: {
         id: usuario._id,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
         nombreUsuario: usuario.nombreUsuario,
         correoUsuario: usuario.correoUsuario,
-        telefono: usuario.telefono,
-        planContratado: usuario.planContratado,
         rolUsuario: usuario.rolUsuario,
         bloqueo: usuario.bloqueo,
       },
@@ -159,6 +134,138 @@ export const obtenerUsuarios = async (req, res) => {
 
     return res.status(500).json({
       mensaje: "Error al obtener usuarios",
+    });
+  }
+};
+
+export const obtenerUsuarioPorId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const usuario = await Usuario.findById(id).select("-contrasenia");
+
+    if (!usuario) {
+      return res.status(404).json({
+        mensaje: "Usuario no encontrado",
+      });
+    }
+
+    return res.status(200).json(usuario);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      mensaje: "Error al obtener el usuario",
+    });
+  }
+};
+
+export const actualizarUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { nombreUsuario, correoUsuario, contrasenia, rolUsuario, bloqueo } =
+      req.body;
+
+    const usuario = await Usuario.findById(id);
+
+    if (!usuario) {
+      return res.status(404).json({
+        mensaje: "Usuario no encontrado",
+      });
+    }
+
+    // Verificar que el nombre de usuario no esté repetido
+    if (nombreUsuario) {
+      const existeNombre = await Usuario.findOne({
+        nombreUsuario: nombreUsuario.trim(),
+        _id: { $ne: id },
+      });
+
+      if (existeNombre) {
+        return res.status(400).json({
+          mensaje: "Ese nombre de usuario ya está registrado",
+        });
+      }
+
+      usuario.nombreUsuario = nombreUsuario.trim();
+    }
+
+    // Verificar que el correo no esté repetido
+    if (correoUsuario) {
+      const existeCorreo = await Usuario.findOne({
+        correoUsuario: correoUsuario.trim().toLowerCase(),
+        _id: { $ne: id },
+      });
+
+      if (existeCorreo) {
+        return res.status(400).json({
+          mensaje: "Ese correo ya está registrado",
+        });
+      }
+
+      usuario.correoUsuario = correoUsuario.trim().toLowerCase();
+    }
+
+    if (typeof rolUsuario !== "undefined") {
+      usuario.rolUsuario = rolUsuario;
+    }
+
+    if (typeof bloqueo !== "undefined") {
+      usuario.bloqueo = bloqueo;
+    }
+
+    if (contrasenia) {
+      if (contrasenia.length < 8) {
+        return res.status(400).json({
+          mensaje: "La contraseña debe tener al menos 8 caracteres",
+        });
+      }
+
+      usuario.contrasenia = await bcrypt.hash(contrasenia, 10);
+    }
+
+    await usuario.save();
+
+    return res.status(200).json({
+      mensaje: "Usuario actualizado correctamente",
+      usuario: {
+        id: usuario._id,
+        nombreUsuario: usuario.nombreUsuario,
+        correoUsuario: usuario.correoUsuario,
+        rolUsuario: usuario.rolUsuario,
+        bloqueo: usuario.bloqueo,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      mensaje: "Error al actualizar usuario",
+    });
+  }
+};
+
+export const eliminarUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const usuario = await Usuario.findByIdAndDelete(id);
+
+    if (!usuario) {
+      return res.status(404).json({
+        mensaje: "Usuario no encontrado",
+      });
+    }
+
+    return res.status(200).json({
+      mensaje: "Usuario eliminado correctamente",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      mensaje: "Error al eliminar usuario",
     });
   }
 };
