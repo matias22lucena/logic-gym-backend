@@ -7,15 +7,16 @@ import {
   actualizarUsuario,
   eliminarUsuario,
 } from "../controllers/usuarios.controllers.js";
+import jwtVerificacion from "../middlewares/jwt.verificacion.js";
 
 const router = Router();
 
 router.post("/register", registrarUsuario);
 router.post("/login", loginUsuario);
 
-router.get("/", obtenerUsuarios);
-router.get("/:id", obtenerUsuarioPorId);
-router.put("/:id", actualizarUsuario);
-router.delete("/:id", eliminarUsuario);
+router.get("/", jwtVerificacion, obtenerUsuarios);
+router.get("/:id", jwtVerificacion, obtenerUsuarioPorId);
+router.put("/:id", jwtVerificacion, actualizarUsuario);
+router.delete("/:id", jwtVerificacion, eliminarUsuario);
 
 export default router;
