@@ -13,5 +13,9 @@ const validarAdmin= async (req, res, next) => {
         if (usuario.rolUsuario !== "admin") {
             return res.status(403).json({ mensaje: "Acceso denegado. Se requiere rol de administrador"});
         }
+        next();
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensaje: "Ocurrió un error al validar el rol de administrador" });
     }
 }
