@@ -44,8 +44,11 @@ export const registrarUsuario = async (req, res) => {
 
     await nuevoUsuario.save();
 
+    const token = jwtGeneracion(nuevoUsuario._id, nuevoUsuario.correoUsuario);
+
     return res.status(201).json({
       mensaje: "Usuario registrado correctamente",
+      token: token,
       usuario: {
         id: nuevoUsuario._id,
         nombreUsuario: nuevoUsuario.nombreUsuario,
@@ -106,8 +109,11 @@ export const loginUsuario = async (req, res) => {
       });
     }
 
+    const token = jwtGeneracion(usuario._id, usuario.correoUsuario);
+
     return res.status(200).json({
       mensaje: "Login correcto",
+      token: token,
       usuario: {
         id: usuario._id,
         nombreUsuario: usuario.nombreUsuario,
