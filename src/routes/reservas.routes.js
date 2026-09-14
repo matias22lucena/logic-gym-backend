@@ -4,11 +4,12 @@ import {
   obtenerReservas,
   eliminarReserva,
 } from "../controllers/reservas.controllers.js";
+import jwtVerificacion from "../middlewares/jwt.verificacion.js";
 
 const router = Router();
 
-router.get("/", obtenerReservas);
-router.post("/", crearReserva);
-router.delete("/", eliminarReserva);
+router.get("/",jwtVerificacion, obtenerReservas);
+router.post("/", jwtVerificacion, crearReserva);
+router.delete("/", jwtVerificacion, eliminarReserva);
 
 export default router;
