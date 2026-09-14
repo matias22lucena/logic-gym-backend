@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import Usuario from "../models/usuario.model.js";
+import jwtGeneracion from "../middlewares/jwt.generacion.js";
 
 export const registrarUsuario = async (req, res) => {
   try {
