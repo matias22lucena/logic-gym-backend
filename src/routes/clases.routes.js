@@ -10,7 +10,7 @@ import jwtVerificacion from "../middlewares/token.verificacion.js";
 const router = Router();
 
 router.post("/", jwtVerificacion, crearClase);
-router.get("/", jwtVerificacion, obtenerClases);
+router.get("/", obtenerClases);
 router.put("/:id", jwtVerificacion, editarClase);
 router.delete("/:id", jwtVerificacion, eliminarClase);
 
