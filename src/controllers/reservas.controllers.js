@@ -25,7 +25,8 @@ export const obtenerReservas = async (req, res) => {
 
 export const crearReserva = async (req, res) => {
   try {
-    const { claseId, usuarioId } = req.body;
+    const { claseId } = req.body;
+    const usuarioId = req.usuarioId;
 
     if (!claseId || !usuarioId) {
       return res.status(400).json({
@@ -80,7 +81,8 @@ export const crearReserva = async (req, res) => {
 
 export const eliminarReserva = async (req, res) => {
   try {
-    const { claseId, usuarioId } = req.query;
+    const { claseId } = req.query;
+    const usuarioId = req.usuarioId;
 
     if (!claseId || !usuarioId) {
       return res.status(400).json({
